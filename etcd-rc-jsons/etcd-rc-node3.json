@@ -1,0 +1,65 @@
+{
+  "kind": "ReplicationController",
+  "apiVersion": "v1beta3",
+  "metadata": {
+     "name": "etcdrc3",
+     "labels": {"name": "etcd-node3"}
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {"name": "etcd-node3"},
+    "template": {
+       "metadata": {
+          "labels": {"name": "etcd-node3"}
+       },
+       "spec": {
+           "containers": [{
+             "name": "etcdcon3",
+             "image": "etcd-cluster-image",
+             "command": [
+                        "/usr/bin/etcd-env.sh",
+                        "/usr/bin/etcd",
+                        "--name",
+                        "etcd-member3",
+                        "--data-dir",
+                        "/var/lib/etcd/etcd-member3",
+                        "--discovery",
+                        "http://192.168.122.210:4001/v2/keys/discovery/5c007a14875d53d9bf0ef5a6fc0257c817f0fb79"
+                        ],
+
+              "ports":[
+                      { "name": "serverport1",
+                        "containerPort": 2380,
+                        "hostPort": 2380
+                      },
+                      { "name": "serverport2",
+                        "containerPort": 7001,
+                        "hostPort": 7001
+                      },
+                      { "name": "clientport1",
+                        "containerPort": 2379,
+                        "hostPort": 2379
+                       },
+                      { "name": "clientport2",
+                        "containerPort": 4001,
+                        "hostPort": 4001
+                      }
+                      ],
+    "volumeMounts": [
+      { "name": "varetcd",
+        "mountPath": "/var/lib/etcd",
+        "readOnly": false}
+        ]
+             }],
+"volumes":[
+  { "name": "varetcd",
+    "hostPath": {
+        "path": "/var/lib/etcd"}
+  }
+],
+             "nodeSelector":
+               {"name": "fed-node3"}
+       }
+    }
+  }
+}
